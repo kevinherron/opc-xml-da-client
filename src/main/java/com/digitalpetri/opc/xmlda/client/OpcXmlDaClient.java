@@ -1,17 +1,40 @@
-package ua.tumakha.yuriy.opc.xmlda.sdk.client;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
-import ua.tumakha.yuriy.opc.xmlda.sdk.model.*;
+package com.digitalpetri.opc.xmlda.client;
 
 import java.time.Clock;
 import java.util.Locale;
 import java.util.Optional;
 
-import static ua.tumakha.yuriy.opc.xmlda.sdk.client.SoapAction.*;
-import static ua.tumakha.yuriy.opc.xmlda.sdk.model.BrowseFilter.ALL;
+import org.opcfoundation.xmlda.Browse;
+import org.opcfoundation.xmlda.BrowseResponse;
+import org.opcfoundation.xmlda.GetProperties;
+import org.opcfoundation.xmlda.GetPropertiesResponse;
+import org.opcfoundation.xmlda.GetStatus;
+import org.opcfoundation.xmlda.GetStatusResponse;
+import org.opcfoundation.xmlda.Read;
+import org.opcfoundation.xmlda.ReadResponse;
+import org.opcfoundation.xmlda.RequestOptions;
+import org.opcfoundation.xmlda.Subscribe;
+import org.opcfoundation.xmlda.SubscribeResponse;
+import org.opcfoundation.xmlda.SubscriptionCancel;
+import org.opcfoundation.xmlda.SubscriptionCancelResponse;
+import org.opcfoundation.xmlda.SubscriptionPolledRefresh;
+import org.opcfoundation.xmlda.SubscriptionPolledRefreshResponse;
+import org.opcfoundation.xmlda.Write;
+import org.opcfoundation.xmlda.WriteResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
+import org.springframework.ws.soap.client.core.SoapActionCallback;
+
+import static com.digitalpetri.opc.xmlda.client.SoapAction.BROWSE;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.GET_PROPERTIES;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.GET_STATUS;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.READ;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.SUBSCRIBE;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.SUBSCRIPTION_CANCEL;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.SUBSCRIPTION_POLLED_REFRESH;
+import static com.digitalpetri.opc.xmlda.client.SoapAction.WRITE;
+import static org.opcfoundation.xmlda.BrowseFilter.ALL;
 
 /**
  * Open Process Control XML-DataAccess SOAP Client.
@@ -89,7 +112,7 @@ public class OpcXmlDaClient extends WebServiceGatewaySupport {
 
     public SubscriptionCancelResponse subscriptionCancel(SubscriptionCancel subscriptionCancelRequest) {
         subscriptionCancelRequest.setClientRequestHandle(
-                getOrDefaultHandle(subscriptionCancelRequest.getClientRequestHandle()));
+            getOrDefaultHandle(subscriptionCancelRequest.getClientRequestHandle()));
         return invokeAction(SUBSCRIPTION_CANCEL, subscriptionCancelRequest, SubscriptionCancelResponse.class);
     }
 
@@ -105,7 +128,7 @@ public class OpcXmlDaClient extends WebServiceGatewaySupport {
     @SuppressWarnings("unchecked")
     private <T> T invokeAction(SoapAction soapAction, Object requestPayload, Class<T> responseClass) {
         return (T) getWebServiceTemplate().marshalSendAndReceive(requestPayload,
-                new SoapActionCallback(soapAction.getActionPath()));
+            new SoapActionCallback(soapAction.getActionPath()));
     }
 
     private String getLanguageTag(Locale locale) {

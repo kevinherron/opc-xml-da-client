@@ -1,4 +1,6 @@
-package ua.tumakha.yuriy.opc.xmlda.sdk;
+package com.digitalpetri.opc.xmlda.client;
+
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,19 +11,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.HttpComponentsMessageSender;
-import ua.tumakha.yuriy.opc.xmlda.sdk.client.OpcXmlDaClient;
-
-import java.util.Locale;
 
 /**
- *  OPC XML-DA SOAP Client Configuration.
+ * OPC XML-DA SOAP Client Configuration.
  *
  * @author Yuriy Tumakha
  */
 @Configuration
-public class OpcXmlDaConfiguration {
+public class OpcXmlDaClientConfiguration {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpcXmlDaConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpcXmlDaClientConfiguration.class);
 
     private static final String OPC_XMLDA_SERVER_URL_PROPERTY = "opc.xmlda.server.url";
 
@@ -31,7 +30,7 @@ public class OpcXmlDaConfiguration {
     @Bean
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("ua.tumakha.yuriy.opc.xmlda.sdk.model");
+        marshaller.setContextPath("org.opcfoundation.xmlda");
         return marshaller;
     }
 

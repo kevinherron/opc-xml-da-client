@@ -1,4 +1,4 @@
-package ua.tumakha.yuriy.opc.xmlda.sdk.client;
+package com.digitalpetri.opc.xmlda.client;
 
 /**
  * OPC XML-DA SOAP Actions.
@@ -6,7 +6,7 @@ package ua.tumakha.yuriy.opc.xmlda.sdk.client;
  * @author Yuriy Tumakha
  */
 enum SoapAction {
-    
+
     GET_STATUS("GetStatus"),
 
     BROWSE("Browse"),
@@ -32,7 +32,7 @@ enum SoapAction {
     }
 
     String getActionPath() {
-        return new StringBuilder(ACTION_BASE).append(action).toString();
+        return ACTION_BASE + action;
     }
 
 }

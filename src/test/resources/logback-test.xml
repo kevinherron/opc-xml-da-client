@@ -8,7 +8,7 @@
         </encoder>
     </appender>
 
-    <logger name="ua.tumakha.yuriy" level="DEBUG"/>
+    <logger name="com.digitalpetri.opc.xmlda.client" level="DEBUG"/>
     <logger name="org.springframework" level="WARN"/>
 
     <root level="WARN">
