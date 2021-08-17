@@ -1,13 +1,11 @@
-OPC XML-DA Java SDK
+OPC XML-DA Java Client
 ===================
 
-[![Build Status](https://travis-ci.org/tumakha/opc-xmlda-sdk.svg?branch=master)](https://travis-ci.org/tumakha/opc-xmlda-sdk)
-
-Open Process Control XML-DataAccess Java SDK
+OPC XML-DA Java Client
 
 ## Prerequisites
 
-Java 8, Maven 3.1+
+JDK 11, Maven 3.1+
 
 ## Generate SOAP models and build project
 
@@ -17,5 +15,6 @@ Go to root project directory and run Maven command
 
 ## Usage examples
 
-* [OpcXmlDaClientITest](https://github.com/tumakha/opc-xmlda-sdk/blob/master/src/test/java/ua/tumakha/yuriy/opc/xmlda/sdk/OpcXmlDaClientITest.java)    
+* [ManualClientTest](https://github.com/kevinherron/opc-xmlda-sdk/blob/master/src/test/java/com/digitalpetri/opc/xmlda/ManualClientTest.java)    
+* [SprintClientTest](https://github.com/kevinherron/opc-xmlda-sdk/blob/master/src/test/java/com/digitalpetri/opc/xmlda/SpringClientTest.java)    
 
