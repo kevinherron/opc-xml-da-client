@@ -156,7 +156,7 @@ public abstract class AbstractOpcXmlDaClientTest {
         writeItemValue.setItemPath(ITEM_PATH);
         writeItemValue.setItemName(WRITE_ITEM_NAME);
         writeItemValue.setValue(newValue);
-        writeItemValue.setClientItemHandle(getClient().generateClientRequestHandle());
+        writeItemValue.setClientItemHandle(getClient().nextClientRequestHandle());
 
         WriteRequestItemList itemList = new WriteRequestItemList();
         itemList.getItems().add(writeItemValue);
