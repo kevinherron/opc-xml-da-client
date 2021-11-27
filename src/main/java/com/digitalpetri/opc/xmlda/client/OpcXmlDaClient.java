@@ -12,6 +12,7 @@ import org.opcfoundation.xmlda.GetPropertiesResponse;
 import org.opcfoundation.xmlda.GetStatus;
 import org.opcfoundation.xmlda.GetStatusResponse;
 import org.opcfoundation.xmlda.Read;
+import org.opcfoundation.xmlda.ReadRequestItemList;
 import org.opcfoundation.xmlda.ReadResponse;
 import org.opcfoundation.xmlda.RequestOptions;
 import org.opcfoundation.xmlda.Subscribe;
@@ -21,6 +22,7 @@ import org.opcfoundation.xmlda.SubscriptionCancelResponse;
 import org.opcfoundation.xmlda.SubscriptionPolledRefresh;
 import org.opcfoundation.xmlda.SubscriptionPolledRefreshResponse;
 import org.opcfoundation.xmlda.Write;
+import org.opcfoundation.xmlda.WriteRequestItemList;
 import org.opcfoundation.xmlda.WriteResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +39,33 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
  */
 public class OpcXmlDaClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpcXmlDaClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpcXmlDaClient.class);
 
     private final AtomicLong clientRequestHandles = new AtomicLong(0L);
 
     private final Locale defaultLocale;
     private final WebServiceTemplate webServiceTemplate;
 
+    /**
+     * Create an {@link OpcXmlDaClient} that communicates with an OPC XML-DA server via a Spring
+     * {@link WebServiceTemplate}.
+     *
+     * @param webServiceTemplate a Spring {@link WebServiceTemplate} configured for some target OPC
+     *                           XML-DA server.
+     */
     public OpcXmlDaClient(WebServiceTemplate webServiceTemplate) {
-        this(webServiceTemplate, Locale.US);
+        this(webServiceTemplate, Locale.getDefault());
     }
 
+    /**
+     * Create an {@link OpcXmlDaClient} that communicates with an OPC XML-DA server via a Spring
+     * {@link WebServiceTemplate}.
+     *
+     * @param webServiceTemplate a Spring {@link WebServiceTemplate} configured for some target OPC
+     *                           XML-DA server.
+     * @param defaultLocale      a {@link Locale} that will be used to set the LocaleID on outbound
+     *                           requests.
+     */
     public OpcXmlDaClient(WebServiceTemplate webServiceTemplate, Locale defaultLocale) {
         this.webServiceTemplate = webServiceTemplate;
         this.defaultLocale = defaultLocale;
@@ -116,26 +134,48 @@ public class OpcXmlDaClient {
 
     //region Read
 
-    public ReadResponse read(Read readRequest) {
-        if (readRequest.getOptions() == null) {
-            readRequest.setOptions(new RequestOptions());
-        }
-        setDefaultOptions(readRequest.getOptions());
+    public ReadResponse read(Consumer<Read> requestCustomizer) {
+        var request = new Read();
+        request.setItemList(new ReadRequestItemList());
+        request.setOptions(new RequestOptions());
+        setDefaultOptions(request.getOptions());
 
-        return invokeAction(SoapAction.READ, readRequest, ReadResponse.class);
+        requestCustomizer.accept(request);
+
+        return read(request);
+    }
+
+    public ReadResponse read(Read request) {
+        if (request.getOptions() == null) {
+            request.setOptions(new RequestOptions());
+            setDefaultOptions(request.getOptions());
+        }
+
+        return invokeAction(SoapAction.READ, request, ReadResponse.class);
     }
 
     //endregion
 
     //region Write
 
-    public WriteResponse write(Write writeRequest) {
-        if (writeRequest.getOptions() == null) {
-            writeRequest.setOptions(new RequestOptions());
-        }
-        setDefaultOptions(writeRequest.getOptions());
+    public WriteResponse write(Consumer<Write> writeCustomizer) {
+        var request = new Write();
+        request.setItemList(new WriteRequestItemList());
+        request.setOptions(new RequestOptions());
+        setDefaultOptions(request.getOptions());
 
-        return invokeAction(SoapAction.WRITE, writeRequest, WriteResponse.class);
+        writeCustomizer.accept(request);
+
+        return write(request);
+    }
+
+    public WriteResponse write(Write request) {
+        if (request.getOptions() == null) {
+            request.setOptions(new RequestOptions());
+            setDefaultOptions(request.getOptions());
+        }
+
+        return invokeAction(SoapAction.WRITE, request, WriteResponse.class);
     }
 
     //endregion
@@ -145,8 +185,8 @@ public class OpcXmlDaClient {
     public SubscribeResponse subscribe(Subscribe subscribeRequest) {
         if (subscribeRequest.getOptions() == null) {
             subscribeRequest.setOptions(new RequestOptions());
+            setDefaultOptions(subscribeRequest.getOptions());
         }
-        setDefaultOptions(subscribeRequest.getOptions());
 
         return invokeAction(SoapAction.SUBSCRIBE, subscribeRequest, SubscribeResponse.class);
     }
@@ -158,9 +198,8 @@ public class OpcXmlDaClient {
     public SubscriptionPolledRefreshResponse subscriptionPolledRefresh(SubscriptionPolledRefresh subscriptionRefresh) {
         if (subscriptionRefresh.getOptions() == null) {
             subscriptionRefresh.setOptions(new RequestOptions());
+            setDefaultOptions(subscriptionRefresh.getOptions());
         }
-
-        setDefaultOptions(subscriptionRefresh.getOptions());
 
         return invokeAction(
             SoapAction.SUBSCRIPTION_POLLED_REFRESH,
@@ -255,6 +294,12 @@ public class OpcXmlDaClient {
         private Locale defaultLocale = Locale.US;
         private WebServiceTemplate webServiceTemplate;
 
+        /**
+         * Set the server URL. This setting is required.
+         *
+         * @param serverUrl the URL for the server.
+         * @return this {@link Builder}.
+         */
         public Builder setServerUrl(String serverUrl) {
             this.serverUrl = serverUrl;
             return this;
@@ -280,6 +325,11 @@ public class OpcXmlDaClient {
             return this;
         }
 
+        /**
+         * Build an {@link OpcXmlDaClient} using the settings configured on this {@link Builder}.
+         *
+         * @return a new {@link OpcXmlDaClient}.
+         */
         public OpcXmlDaClient build() {
             if (webServiceTemplate == null) {
                 if (serverUrl == null) {
